@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Protobuf Include="protobuf.proto" />
+  </ItemGroup>
+
+  <!-- This emulates using the custom SDK -->
+  <Import Project="..\Sdk\Sdk.targets" />
+
+  <Target Name="VerifyManipulation1" Condition="'$(VerifyManipulation2)' == 'true'" AfterTargets="Manipulation1">
+    <Error Condition="'@(Protobuf->Count())' != '@(ProtoCompile->Count())'" Text="ProtoCompile not populated" />
+  </Target>
+
+  <Target Name="VerifyManipulation2" Condition="'$(VerifyManipulation2)' == 'true'" AfterTargets="Manipulation2">
+    <ItemGroup>
+      <ProtoCompileWithoutOutput Include="@(ProtoCompile)" Condition="'%(ProtoCompile.Destination)' == '' OR '%(ProtoCompile.Content)' == ''" />
+    </ItemGroup>
+    <Error Condition="'@(ProtoCompileWithoutOutput)' != ''" Text="ProtoCompile output not computed" />
+  </Target>
+
+</Project>

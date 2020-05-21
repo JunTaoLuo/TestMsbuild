@@ -1,0 +1,28 @@
+<Project>
+
+    <PropertyGroup>
+        <EnableWriting Condition="'$(EnableWriting)' == ''">true</EnableWriting>
+    </PropertyGroup>
+
+    <!-- Sample step -->
+    <Target Name="Manipulation1">
+        <ItemGroup>
+            <ProtoCompile Include="@(Protobuf)" />
+        </ItemGroup>
+    </Target>
+
+    <!-- Sample step -->
+    <Target Name="Manipulation2" Condition="'$(EnableWriting)'">
+        <ItemGroup>
+            <ProtoCompile>
+                <Destination>$(OutDir)\%(Filename).txt</Destination>
+                <Content>Hello world from %(Filename)</Content>
+            </ProtoCompile>
+        </ItemGroup>
+        <WriteLinesToFile File="@(ProtoCompile->'%(Destination)')" Lines="@(ProtoCompile->'@(Content)')" />
+    </Target>
+
+    <!-- Sample target -->
+    <Target Name="ProtobufManipulation" BeforeTargets="Build" DependsOnTargets="Manipulation1;Manipulation2" />
+
+</Project>
